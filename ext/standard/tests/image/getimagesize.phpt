@@ -223,4 +223,17 @@ array(13) {
     ["mime"]=>
     string(10) "image/tiff"
   }
+  ["test4pix.tif"]=>
+    array(5) {
+    [0]=>
+    int(4)
+    [1]=>
+    int(1)
+    [2]=>
+    int(7)
+    [3]=>
+    string(20) "width="4" height="1""
+    ["mime"]=>
+    string(10) "image/tiff"
+  }
 }
