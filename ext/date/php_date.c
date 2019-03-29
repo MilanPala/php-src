@@ -656,6 +656,7 @@ static HashTable *date_object_get_gc_timezone(zend_object *object, zval **table,
 static HashTable *date_object_get_debug_info_timezone(zend_object *object, int *is_temp);
 static void php_timezone_to_string(php_timezone_obj *tzobj, zval *zv);
 
+static int date_object_compare_interval(zval *d1, zval *d2);
 zval *date_interval_read_property(zend_object *object, zend_string *member, int type, void **cache_slot, zval *rv);
 zval *date_interval_write_property(zend_object *object, zend_string *member, zval *value, void **cache_slot);
 static zval *date_interval_get_property_ptr_ptr(zend_object *object, zend_string *member, int type, void **cache_slot);
@@ -2139,6 +2140,7 @@ static void date_register_classes(void) /* {{{ */
 	date_object_handlers_interval.get_properties = date_object_get_properties_interval;
 	date_object_handlers_interval.get_property_ptr_ptr = date_interval_get_property_ptr_ptr;
 	date_object_handlers_interval.get_gc = date_object_get_gc_interval;
+    date_object_handlers_interval.compare_objects = date_object_compare_interval;
 
 	INIT_CLASS_ENTRY(ce_period, "DatePeriod", date_funcs_period);
 	ce_period.create_object = date_object_new_period;
@@ -2217,6 +2219,46 @@ static int date_object_compare_date(zval *d1, zval *d2) /* {{{ */
 	}
 
 	return timelib_time_compare(o1->time, o2->time);
+} /* }}} */
+
+static int date_object_compare_interval(zval *d1, zval *d2) /* {{{ */
+{
+    php_interval_obj *o1 = Z_PHPINTERVAL_P(d1);
+    php_interval_obj *o2 = Z_PHPINTERVAL_P(d2);
+
+    if (o1->diff->days > o2->diff->days) {
+        return 1;
+    }
+
+    if (o1->diff->days < o2->diff->days) {
+        return -1;
+    }
+
+    if (o1->diff->h > o2->diff->h) {
+        return 1;
+    }
+
+    if (o1->diff->h < o2->diff->h) {
+        return -1;
+    }
+
+    if (o1->diff->i > o2->diff->i) {
+        return 1;
+    }
+
+    if (o1->diff->i < o2->diff->i) {
+        return -1;
+    }
+
+    if (o1->diff->s > o2->diff->s) {
+        return 1;
+    }
+
+    if (o1->diff->s < o2->diff->s) {
+        return -1;
+    }
+
+    return 0;
 } /* }}} */
 
 static HashTable *date_object_get_gc(zend_object *object, zval **table, int *n) /* {{{ */
